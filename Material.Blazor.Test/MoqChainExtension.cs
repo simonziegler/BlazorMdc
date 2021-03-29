@@ -1,7 +1,7 @@
 ﻿using Moq;
 using System;
 
-namespace Testing
+namespace Material.Blazor.Test
 {
     public static class MoqChainExtension
     {

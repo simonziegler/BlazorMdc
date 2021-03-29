@@ -1,24 +1,24 @@
 ﻿using Material.Blazor.Internal;
 using Microsoft.JSInterop;
 using Moq;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace Testing
+namespace Material.Blazor.Test
 {
     public class BatchingExceptionPropagation
     {
-        [Test]
-        public void Message()
+        [Fact]
+        public async Task Message()
         {
             var js_runtime = new Mock<IJSRuntime>()
                 .Chain(m => m.Setup(js => js.InvokeAsync<string[]>(It.IsAny<string>(), It.IsAny<object[]>())).ReturnsAsync(new[] { "failed because of XYZ" }))
                 .Object;
             var batching_js_runtime = new BatchingJSRuntime(js_runtime);
-            var exception = Assert.ThrowsAsync<JSException>(() => batching_js_runtime.InvokeVoidAsync("foo"));
-            Assert.IsTrue(exception.Message.Contains("failed because of XYZ"));
+            var exception = await Assert.ThrowsAsync<JSException>(() => batching_js_runtime.InvokeVoidAsync("foo"));
+            Assert.Contains("failed because of XYZ", exception.Message);
         }
-        [Test]
+        [Fact]
         public void PropagateCancelledTask()
         {
             var js_runtime = new Mock<IJSRuntime>()

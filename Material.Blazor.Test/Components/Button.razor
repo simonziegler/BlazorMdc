@@ -1,0 +1,23 @@
+﻿@inherits TestComponentBase
+
+
+<SnapshotTest Setup="Setup">
+<TestInput>
+    <MBButton Label="Hello button" ButtonStyle="MBButtonStyle.ContainedRaised" />
+</TestInput>
+<ExpectedOutput>
+    <div class="mdc-touch-target-wrapper">
+        <button class="mdc-button mdc-button--raised">
+            <div class="mdc-button__ripple"></div>
+            <span class="mdc-button__label">Hello button</span>
+        </button>
+    </div>
+</ExpectedOutput>
+
+@code {
+    void Setup(SnapshotTest test)
+    {
+        test.Services.AddLogging().AddMBServices();
+    }
+}
+</SnapshotTest>

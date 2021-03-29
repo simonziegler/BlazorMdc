@@ -4,15 +4,14 @@ using Material.Blazor.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
-namespace Testing
+namespace Material.Blazor.Test
 {
     public class Mocking
     {
-        private Bunit.TestContext ctx;
-        [SetUp]
-        public void InjectMockedServices()
+        private TestContext ctx;
+        private void InjectMockedServices()
         {
             ctx = new();
             _ = ctx.Services
@@ -28,27 +27,31 @@ namespace Testing
                 .AddSingleton(new Mock<IMBIcon>().Object)
                 .AddSingleton(new Mock<IMBIconFoundry>().Object);
         }
-        [Test]
+        [Fact]
         public void TryRenderMBAnimatedNavigation()
         {
+            InjectMockedServices();
             var cut = ctx.RenderComponent<MBAnimatedNavigation>();
             cut.MarkupMatches("");
         }
-        [Test]
+        [Fact]
         public void TryRenderMBAnchor()
         {
+            InjectMockedServices();
             var cut = ctx.RenderComponent<MBAnchor>();
             cut.MarkupMatches("");
         }
-        [Test]
+        [Fact]
         public void TryRenderMBIcon()
         {
+            InjectMockedServices();
             var cut = ctx.RenderComponent<MBIcon>((nameof(MBIcon.IconName), "alarm"));
             cut.MarkupMatches("<i class=\"material-icons\">alarm</i>");
         }
-        [Test]
+        [Fact]
         public void TryRenderMBDialog()
         {
+            InjectMockedServices();
             var cut = ctx.RenderComponent<MBDialog>();
             cut.MarkupMatches("");
         }
