@@ -93,6 +93,6 @@ namespace Material.Blazor
 
 
         /// <inheritdoc/>
-        private protected override Task InstantiateMcwComponent() => PrimaryAction != null ? JsRuntime.InvokeVoidAsync("MaterialBlazor.MBCard.init", PrimaryActionReference) : Task.CompletedTask;
+        private protected override Task InstantiateMcwComponentAsync() => PrimaryAction != null ? InvokeVoidAsync("MaterialBlazor.MBCard.init", PrimaryActionReference) : Task.CompletedTask;
     }
 }

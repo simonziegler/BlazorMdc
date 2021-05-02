@@ -550,7 +550,7 @@ namespace Material.Blazor
 #if Logging
             Log("GridSyncScroll()");
 #endif
-            await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBGrid.syncScrollByID", GridHeaderID, GridBodyID);
+            await InvokeVoidAsync("MaterialBlazor.MBGrid.syncScrollByID", GridHeaderID, GridBodyID);
             //await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBGrid.syncScrollByRef", GridHeaderRef, GridBodyRef);
         }
         #endregion
@@ -586,7 +586,7 @@ namespace Material.Blazor
             ColumnWidthArray = new float[ColumnConfigurations.Count()];
 
             // Measure the width of a vertical scrollbar (Used to set the padding of the header)
-            ScrollWidth = await JsRuntime.InvokeAsync<int>(
+            ScrollWidth = await BatchingJSRuntime.InvokeAsync<int>(
                 "MaterialBlazor.MBGrid.getScrollBarWidth",
                 "mb-grid-div-body");
             ScrollWidth = 0;
@@ -611,7 +611,7 @@ namespace Material.Blazor
                     colIndex++;
                 }
 
-                ColumnWidthArray = await JsRuntime.InvokeAsync<float[]>(
+                ColumnWidthArray = await BatchingJSRuntime.InvokeAsync<float[]>(
                         "MaterialBlazor.MBGrid.getTextWidths",
                         "mb-grid-header-td-measure",
                         ColumnWidthArray,
@@ -669,7 +669,7 @@ namespace Material.Blazor
                         colIndex++;
                     }
                 }
-                ColumnWidthArray = await JsRuntime.InvokeAsync<float[]>(
+                ColumnWidthArray = await BatchingJSRuntime.InvokeAsync<float[]>(
                         "MaterialBlazor.MBGrid.getTextWidths",
                         "mb-grid-body-td-measure",
                         ColumnWidthArray,

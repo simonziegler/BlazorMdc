@@ -40,25 +40,6 @@ namespace Material.Blazor
         }
 
 
-        private bool _disposed = false;
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                ObjectReference?.Dispose();
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-
         /// <summary>
         /// For Material Theme to notify of menu closure via JS Interop.
         /// </summary>
@@ -77,19 +58,23 @@ namespace Material.Blazor
         {
             if (IsOpen)
             {
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBMenu.hide", ElementReference);
+                await InvokeVoidAsync("MaterialBlazor.MBMenu.hide", ElementReference);
                 IsOpen = false;
             }
             else
             {
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBMenu.show", ElementReference);
+                await InvokeVoidAsync("MaterialBlazor.MBMenu.show", ElementReference);
                 IsOpen = true;
             }
         }
 
 
         /// <inheritdoc/>
-        private protected override Task InstantiateMcwComponent() => JsRuntime.InvokeVoidAsync("MaterialBlazor.MBMenu.init", ElementReference, ObjectReference);
+        private protected override Task InstantiateMcwComponentAsync() => InvokeVoidAsync("MaterialBlazor.MBMenu.init", ElementReference, ObjectReference);
+
+
+        /// <inheritdoc/>
+        private protected override void DisposeMcwComponent() => ObjectReference?.Dispose();
 
 
         /// <summary>

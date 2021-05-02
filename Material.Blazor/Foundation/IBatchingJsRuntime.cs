@@ -1,4 +1,5 @@
 ﻿using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
 namespace Material.Blazor.Internal
@@ -14,7 +15,7 @@ namespace Material.Blazor.Internal
         /// <param name="identifier"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task InvokeVoidAsync(string identifier, params object[] args);
+        Task InvokeVoidAsync(ComponentFoundation callingComponent, string identifier, params object[] args);
 
 
         /// <summary>
@@ -25,5 +26,15 @@ namespace Material.Blazor.Internal
         /// <param name="args"></param>
         /// <returns></returns>        
         Task<T> InvokeAsync<T>(string identifier, params object[] args);
+
+
+        /// <summary>
+        /// Called by <see cref="ComponentFoundation"/> with component dispose actions. These must be managed by batching js
+        /// to avoid race conditions between disposal and delayed/timer instantiation.
+        /// </summary>
+        /// <param name="disposeAsync"></param>
+        /// <param name="dispose"></param>
+        /// <returns></returns>
+        Task SemaphoreDispose(ComponentFoundation callingComponent, Func<Task> disposeAsync, Action dispose);
     }
 }

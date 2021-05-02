@@ -3,6 +3,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -16,16 +18,20 @@ namespace Material.Blazor.Internal
         /// </summary>
         private class Call
         {
-            public string Identifier { get; private set; }
+            public string CrossReferenceId { get; private init; }
 
-            public object[] Args { get; private set; }
+            public string Identifier { get; private init; }
 
-            public TaskCompletionSource TaskCompletionSource { get; private set; }
+            public object[] Args { get; private init; }
+
+            public TaskCompletionSource TaskCompletionSource { get; private init; }
 
             public Task Task => TaskCompletionSource.Task;
 
-            public Call(string identifier, object[] args)
+
+            public Call(ComponentFoundation callingComponent, string identifier, object[] args)
             {
+                CrossReferenceId = callingComponent.CrossReferenceId;
                 Identifier = identifier;
                 Args = args;
                 TaskCompletionSource = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -34,8 +40,10 @@ namespace Material.Blazor.Internal
 
 
         private readonly IJSRuntime js;
-        private readonly ConcurrentQueue<Call> queuedCalls = new();
-        private readonly Timer timer = new(10);
+        private readonly ConcurrentDictionary<string, Call> queuedCalls = new();
+        private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
+        private readonly System.Timers.Timer timer = new(10);
+        private static readonly Architecture Architecture = RuntimeInformation.OSArchitecture;
 
 
         public BatchingJSRuntime(IJSRuntime js)
@@ -49,17 +57,27 @@ namespace Material.Blazor.Internal
         {
             List<Call> batch = new();
 
-            while (queuedCalls.TryDequeue(out var call))
-            {
-                batch.Add(call);
-            }
+            await semaphoreSlim.WaitAsync();
 
-            if (!batch.Any())
-            {
-                return;
-            }
             try
-            {
+            { 
+                foreach (var key in queuedCalls.Keys)
+                {
+                    if (queuedCalls.TryRemove(key, out var call))
+                    {
+                        batch.Add(call);
+                    }
+                }
+                //while (queuedCalls.TryRemove(out var call))
+                //{
+                //    batch.Add(call);
+                //}
+
+                if (!batch.Any())
+                {
+                    return;
+                }
+            
                 var errors = await js.InvokeAsync<string[]>("MaterialBlazor.Batching.apply", batch);
                 foreach (var (call, error) in batch.Zip(errors))
                 {
@@ -83,14 +101,23 @@ namespace Material.Blazor.Internal
                     }
                 }
             }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
 
 
         /// <inheritdoc/>
-        public Task InvokeVoidAsync(string identifier, params object[] args)
+        public Task InvokeVoidAsync(ComponentFoundation callingComponent, string identifier, params object[] args)
         {
-            var call = new Call(identifier, args);
-            queuedCalls.Enqueue(call);
+            if (Architecture == Architecture.Wasm)
+            {
+                return js.InvokeVoidAsync(identifier, args).AsTask();
+            }
+
+            var call = new Call(callingComponent, identifier, args);
+            queuedCalls.TryAdd(call.CrossReferenceId, call);
             timer.Start();
             return call.Task;
         }
@@ -100,6 +127,32 @@ namespace Material.Blazor.Internal
         public async Task<T> InvokeAsync<T>(string identifier, params object[] args)
         {
             return await js.InvokeAsync<T>(identifier, args);
+        }
+
+
+        /// <inheritdoc/>
+        public async Task SemaphoreDispose(ComponentFoundation callingComponent, Func<Task> disposeAsync, Action dispose)
+        {
+            if (Architecture == Architecture.Wasm)
+            {
+                dispose();
+                await disposeAsync();
+                return;
+            }
+
+            await semaphoreSlim.WaitAsync();
+
+            try
+            {
+                queuedCalls.TryRemove(callingComponent.CrossReferenceId, out var call);
+
+                dispose();
+                await disposeAsync();
+            }
+            finally
+            {
+                semaphoreSlim.Release();
+            }
         }
     }
 }

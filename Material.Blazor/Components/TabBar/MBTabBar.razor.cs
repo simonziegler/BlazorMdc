@@ -93,25 +93,6 @@ namespace Material.Blazor
         }
 
 
-        private bool _disposed = false;
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                ObjectReference?.Dispose();
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-
         /// <summary>
         /// For Material Theme to notify when a tab is clicked via JS Interop.
         /// </summary>
@@ -128,10 +109,14 @@ namespace Material.Blazor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void OnValueSetCallback() => InvokeAsync(() => JsRuntime.InvokeVoidAsync("MaterialBlazor.MBTabBar.activateTab", ElementReference, Value));
+        protected void OnValueSetCallback() => InvokeAsync(() => InvokeVoidAsync("MaterialBlazor.MBTabBar.activateTab", ElementReference, Value));
 
 
         /// <inheritdoc/>
-        private protected override Task InstantiateMcwComponent() => JsRuntime.InvokeVoidAsync("MaterialBlazor.MBTabBar.init", ElementReference, ObjectReference);
+        private protected override Task InstantiateMcwComponentAsync() => InvokeVoidAsync("MaterialBlazor.MBTabBar.init", ElementReference, ObjectReference);
+
+
+        /// <inheritdoc/>
+        private protected override void DisposeMcwComponent() => ObjectReference?.Dispose();
     }
 }

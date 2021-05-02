@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -11,7 +12,7 @@ namespace Material.Blazor.Internal
     /// <summary>
     /// The base class for all Material.Blazor components.
     /// </summary>
-    public abstract class ComponentFoundation : ComponentBase, IDisposable
+    public abstract class ComponentFoundation : ComponentBase, IAsyncDisposable, IDisposable
     {
         /// <summary>
         /// A list of unmatched attributes that are used by and therefore essential for Material.Blazor. Works with 
@@ -23,8 +24,9 @@ namespace Material.Blazor.Internal
         private static readonly ImmutableArray<string> EssentialSplattableAttributes = ImmutableArray.Create("formnovalidate", "max", "min", "role", "step", "tabindex", "type", "data-prev-page");
         private bool? disabled = null;
 
-        [Inject] private IBatchingJSRuntime InjectedJsRuntime { get; set; }
-        protected IBatchingJSRuntime JsRuntime { get; set; }
+
+        [Inject] private IBatchingJSRuntime InjectedBatchingJSRuntime { get; set; }
+        private protected IBatchingJSRuntime BatchingJSRuntime { get; set; }
         [CascadingParameter] private MBDialog ParentDialog { get; set; }
         [Inject] private protected IMBTooltipService TooltipService { get; set; }
         [Inject] private protected ILogger<ComponentFoundation> Logger { get; set; }
@@ -97,7 +99,7 @@ namespace Material.Blazor.Internal
         /// <summary>
         /// Gets a value for the component's 'id' attribute.
         /// </summary>
-        private protected string CrossReferenceId { get; set; } = Utilities.GenerateUniqueElementName();
+        internal string CrossReferenceId { get; set; } = Utilities.GenerateUniqueElementName();
 
 
         /// <summary>
@@ -134,32 +136,74 @@ namespace Material.Blazor.Internal
         /// <summary>
         /// Components should override this with a function to be called when Material.Blazor wants to run Material Components Web instantiation via JS Interop - always gets called from <see cref="OnAfterRenderAsync(bool)"/>, which should not be overridden.
         /// </summary>
-        private protected virtual Task InstantiateMcwComponent() => Task.CompletedTask;
+        private protected virtual Task InstantiateMcwComponentAsync() => Task.CompletedTask;
+
+
+        /// <summary>
+        /// Components should override this for any async dispose operation.
+        /// </summary>
+        private protected virtual Task DisposeMcwComponentAsync() => Task.CompletedTask;
+
+
+        /// <summary>
+        /// Components should override this for any synchronous dispose operation.
+        /// </summary>
+        private protected virtual void DisposeMcwComponent() { }
 
 
         private bool _disposed;
+        /// <inheritdoc/>
         protected virtual void Dispose(bool disposing)
         {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing && TooltipId != null)
+            if (!_disposed && disposing && TooltipId != null)
             {
                 TooltipService.RemoveTooltip(TooltipId.Value);
                 TooltipId = null;
-            }
 
-            _disposed = true;
+                _disposed = true;
+            }
         }
 
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+
+        /// <inheritdoc/>
+        public async ValueTask DisposeAsync()
+        {
+            // Perform async cleanup.
+            await DisposeAsyncCore();
+
+            // Dispose of unmanaged resources.
+            Dispose(disposing: false);
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
+
+
+        /// <inheritdoc/>
+        protected virtual async ValueTask DisposeAsyncCore()
+        {
+            await BatchingJSRuntime.SemaphoreDispose(this, DisposeMcwComponentAsync, DisposeMcwComponent);
+        }
+
+
+        /// <summary>
+        /// Local implementation of InvokeVoidAsync that passes this component to the batching js runtime which needs to track
+        /// cross reference ids.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private protected async Task InvokeVoidAsync(string identifier, params object[] args)
+        {
+            await BatchingJSRuntime.InvokeVoidAsync(this, identifier, args);
         }
 
 
@@ -224,7 +268,7 @@ namespace Material.Blazor.Internal
         /// </summary>
         protected sealed override void OnInitialized()
         {
-            JsRuntime = ParentDialog == null ? InjectedJsRuntime : new DialogAwareBatchingJSRuntime(InjectedJsRuntime, ParentDialog);
+            BatchingJSRuntime = ParentDialog == null ? InjectedBatchingJSRuntime : new DialogAwareBatchingJSRuntime(InjectedBatchingJSRuntime, ParentDialog);
             // For consistency, we only ever use OnInitializedAsync. To prevent ourselves from using OnInitialized accidentally, we seal this method from here on.
 
             // the only thing we do here, is creating an ID for the tooltip, if we have one
@@ -305,7 +349,7 @@ namespace Material.Blazor.Internal
             {
                 try
                 {
-                    await InstantiateMcwComponent().ConfigureAwait(false);
+                    await InstantiateMcwComponentAsync().ConfigureAwait(false);
                     HasInstantiated = true;
                     AddTooltip();
                 }

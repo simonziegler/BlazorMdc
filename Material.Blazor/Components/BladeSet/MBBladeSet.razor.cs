@@ -1,6 +1,7 @@
 ﻿using Material.Blazor.Internal;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Material.Blazor
         private const int transitionMs = 200;
 
         [Inject] private ILogger<MBBladeSet> Logger { get; set; }
-        [Inject] private IBatchingJSRuntime JsRuntime { get; set; }
+        [Inject] private IJSRuntime JSRuntime { get; set; }
 
 
         /// <summary>
@@ -338,7 +339,7 @@ namespace Material.Blazor
 
             if (addedBladesQueue.TryDequeue(out var addedBlade))
             {
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBBladeSet.openBlade", addedBlade.BladeElementReference, addedBlade.BladeContentElementReference, transitionMs);
+                await JSRuntime.InvokeVoidAsync("MaterialBlazor.MBBladeSet.openBlade", addedBlade.BladeElementReference, addedBlade.BladeContentElementReference, transitionMs);
 
                 addedBlade.Status = BladeStatus.Open;
 
@@ -348,7 +349,7 @@ namespace Material.Blazor
             }
             else if (removedBladesQueue.TryDequeue(out var removedBlade))
             {
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBBladeSet.closeBlade", removedBlade.BladeElementReference, transitionMs);
+                await JSRuntime.InvokeVoidAsync("MaterialBlazor.MBBladeSet.closeBlade", removedBlade.BladeElementReference, transitionMs);
 
                 await Task.Delay(transitionMs);
 

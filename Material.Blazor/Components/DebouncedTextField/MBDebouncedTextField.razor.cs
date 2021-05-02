@@ -105,26 +105,6 @@ namespace Material.Blazor
         }
 
 
-        // Would like to use <inheritdoc/> however DocFX cannot resolve to references outside Material.Blazor
-        private bool _disposed = false;
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                Timer?.Dispose();
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-
         private void OnTextInput(ChangeEventArgs eventArgs)
         {
             Timer?.Dispose();
@@ -135,5 +115,9 @@ namespace Material.Blazor
 
 
         private void OnTimerComplete(object stateInfo) => InvokeAsync(() => ComponentValue = CurrentValue);
+
+
+        /// <inheritdoc/>
+        private protected override void DisposeMcwComponent() => Timer?.Dispose();
     }
 }

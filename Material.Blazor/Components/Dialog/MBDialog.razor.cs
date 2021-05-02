@@ -89,25 +89,6 @@ namespace Material.Blazor
         }
 
 
-        private bool _disposed = false;
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                ObjectReference?.Dispose();
-            }
-
-            _disposed = true;
-
-            base.Dispose(disposing);
-        }
-
-
         /// <summary>
         /// Shows the dialog. This first renders the Blazor markup and then allows
         /// Material Theme to open the dialog, subsequently intiating all embedded Blazor components.
@@ -143,7 +124,7 @@ namespace Material.Blazor
         {
             try
             {
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBDialog.show", DialogElem, ObjectReference, EscapeKeyAction, ScrimClickAction);
+                await InvokeVoidAsync("MaterialBlazor.MBDialog.show", DialogElem, ObjectReference, EscapeKeyAction, ScrimClickAction);
             }
             catch
             {
@@ -158,7 +139,7 @@ namespace Material.Blazor
         /// </summary>
         public async Task HideAsync()
         {
-            await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBDialog.hide", DialogElem);
+            await InvokeVoidAsync("MaterialBlazor.MBDialog.hide", DialogElem);
             IsOpen = false;
             await InvokeAsync(StateHasChanged);
         }
@@ -181,5 +162,10 @@ namespace Material.Blazor
             IsOpen = false;
             await InvokeAsync(StateHasChanged);
         }
+
+
+        /// <inheritdoc/>
+        private protected override void DisposeMcwComponent() => ObjectReference?.Dispose();
+
     }
 }
