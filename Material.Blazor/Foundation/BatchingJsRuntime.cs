@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -33,26 +34,51 @@ namespace Material.Blazor.Internal
         }
 
 
+        private static readonly Architecture Architecture = RuntimeInformation.OSArchitecture;
         private readonly IJSRuntime js;
-        private readonly ConcurrentQueue<Call> queuedCalls = new();
-        private readonly Timer timer = new(10);
+        private readonly ConcurrentDictionary<string, ConcurrentQueue<Call>> queuedCalls = new();
 
 
         public BatchingJSRuntime(IJSRuntime js)
         {
             this.js = js;
-            timer.Elapsed += Timer_Elapsed;
         }
 
 
-        private async void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        /// <inheritdoc/>
+        public Task InvokeVoidAsync(MBBatchingWrapper batchingWrapper, string identifier, params object[] args)
         {
-            List<Call> batch = new();
-
-            while (queuedCalls.TryDequeue(out var call))
+            if (Architecture == Architecture.Wasm || batchingWrapper == null)
             {
-                batch.Add(call);
+                return js.InvokeVoidAsync(identifier, args).AsTask();
             }
+
+            var call = new Call(identifier, args);
+            queuedCalls.TryAdd(batchingWrapper.CrossReferenceId, new());
+            queuedCalls[batchingWrapper.CrossReferenceId].Enqueue(call);
+
+            batchingWrapper.InvokeStateHasChanged();
+
+            return call.Task;
+        }
+
+
+        /// <inheritdoc/>
+        public async Task<T> InvokeAsync<T>(string identifier, params object[] args)
+        {
+            return await js.InvokeAsync<T>(identifier, args);
+        }
+
+
+        /// <inheritdoc/>
+        public async Task FlushBatch(MBBatchingWrapper batchingWrapper)
+        {
+            if (!queuedCalls.TryRemove(batchingWrapper.CrossReferenceId, out var queue))
+            {
+                return;
+            }
+
+            var batch = queue.ToList();
 
             if (!batch.Any())
             {
@@ -83,23 +109,6 @@ namespace Material.Blazor.Internal
                     }
                 }
             }
-        }
-
-
-        /// <inheritdoc/>
-        public Task InvokeVoidAsync(string identifier, params object[] args)
-        {
-            var call = new Call(identifier, args);
-            queuedCalls.Enqueue(call);
-            timer.Start();
-            return call.Task;
-        }
-
-
-        /// <inheritdoc/>
-        public async Task<T> InvokeAsync<T>(string identifier, params object[] args)
-        {
-            return await js.InvokeAsync<T>(identifier, args);
         }
     }
 }

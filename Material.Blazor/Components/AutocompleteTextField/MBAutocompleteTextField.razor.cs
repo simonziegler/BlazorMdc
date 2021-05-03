@@ -342,7 +342,7 @@ namespace Material.Blazor
             if (!IsOpen || forceOpen)
             {
                 IsOpen = true;
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBAutoCompleteTextField.open", MenuReference);
+                await InvokeJSVoidAsync("MaterialBlazor.MBAutoCompleteTextField.open", MenuReference);
             }
         }
 
@@ -352,12 +352,12 @@ namespace Material.Blazor
             if (IsOpen || forceClose)
             {
                 IsOpen = false;
-                await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBAutoCompleteTextField.close", MenuReference);
+                await InvokeJSVoidAsync("MaterialBlazor.MBAutoCompleteTextField.close", MenuReference);
             }
         }
 
 
         /// <inheritdoc/>
-        private protected override Task InstantiateMcwComponent() => JsRuntime.InvokeVoidAsync("MaterialBlazor.MBAutoCompleteTextField.init", TextField.ElementReference, MenuReference, ObjectReference);
+        private protected override Task InstantiateMcwComponent() => InvokeJSVoidAsync("MaterialBlazor.MBAutoCompleteTextField.init", TextField.ElementReference, MenuReference, ObjectReference);
     }
 }

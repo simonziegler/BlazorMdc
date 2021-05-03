@@ -1,6 +1,6 @@
-﻿using Material.Blazor.Internal;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Material.Blazor
         private const int transitionMs = 200;
 
         [Inject] private ILogger<MBBladeSet> Logger { get; set; }
-        [Inject] private IBatchingJSRuntime JsRuntime { get; set; }
+        [Inject] private IJSRuntime JsRuntime { get; set; }
 
 
         /// <summary>

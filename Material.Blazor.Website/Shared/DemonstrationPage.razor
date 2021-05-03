@@ -1,48 +1,50 @@
 ﻿<div @key="@CascadingDefaults" class="mdc-layout-grid__cell--span-12">
     <MBCard>
         <Primary>
-            <div class="mb-card__autostyled">
-                <h2 class="mb-card__title mdc-typography--headline4">@Title</h2>
-            </div>
-            <div class="mb-card__secondary">
-                @Description
+            <MBBatchingWrapper>
+                <div class="mb-card__autostyled">
+                    <h2 class="mb-card__title mdc-typography--headline4">@Title</h2>
+                </div>
+                <div class="mb-card__secondary">
+                    @Description
 
-                @if (NeedsTable)
-                {
-                    <p style="overflow: auto;">
-                        <MBDataTable Items="@Items"
-                                     Context="item"
-                                     class="dr-table">
-                            <TableHeader>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Reference</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Link Source</th>
-                            </TableHeader>
+                    @if (NeedsTable)
+                    {
+                        <p style="overflow: auto;">
+                            <MBDataTable Items="@Items"
+                                         Context="item"
+                                         class="dr-table">
+                                <TableHeader>
+                                    <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Reference</th>
+                                    <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Link Source</th>
+                                </TableHeader>
 
-                            <TableRow>
-                                <td class="mdc-data-table__cell">@item.Title</td>
-                                <td class="mdc-data-table__cell">@item.ContentMarkup</td>
-                            </TableRow>
-                        </MBDataTable>
-                    </p>
-                }
+                                <TableRow>
+                                    <td class="mdc-data-table__cell">@item.Title</td>
+                                    <td class="mdc-data-table__cell">@item.ContentMarkup</td>
+                                </TableRow>
+                            </MBDataTable>
+                        </p>
+                    }
 
-                @if (RequiresDisableSelection)
-                {
-                    <p>
-                        <MBSwitch @bind-Value="@CascadingDefaults.Disabled" Label="Disable Components" />
-                    </p>
-                }
+                    @if (RequiresDisableSelection)
+                    {
+                        <p>
+                            <MBSwitch @bind-Value="@CascadingDefaults.Disabled" Label="Disable Components" />
+                        </p>
+                    }
 
-                @if (MinDensity != MBDensity.Default)
-                {
-                    <p>
-                        <MBRadioButtonGroup @bind-Value="@CascadingDefaults.ThemeDensity"
-                                            Items="@Densities" />
-                    </p>
-                }
+                    @if (MinDensity != MBDensity.Default)
+                    {
+                        <p>
+                            <MBRadioButtonGroup @bind-Value="@CascadingDefaults.ThemeDensity"
+                                                Items="@Densities" />
+                        </p>
+                    }
 
-                @Controls
-            </div>
+                    @Controls
+                </div>
+            </MBBatchingWrapper>
         </Primary>
     </MBCard>
 </div>

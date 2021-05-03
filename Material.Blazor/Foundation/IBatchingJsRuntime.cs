@@ -11,10 +11,11 @@ namespace Material.Blazor.Internal
         /// <summary>
         /// Same as <see cref="JSRuntimeExtensions.InvokeVoidAsync(IJSRuntime, string, object[])"/>, except calls are batched in 10ms intervals.
         /// </summary>
+        /// <param name="batchingWrapper"></param>
         /// <param name="identifier"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task InvokeVoidAsync(string identifier, params object[] args);
+        Task InvokeVoidAsync(MBBatchingWrapper batchingWrapper, string identifier, params object[] args);
 
 
         /// <summary>
@@ -25,5 +26,13 @@ namespace Material.Blazor.Internal
         /// <param name="args"></param>
         /// <returns></returns>        
         Task<T> InvokeAsync<T>(string identifier, params object[] args);
+
+
+        /// <summary>
+        /// Flushes the batch associated with the supplied batching wrapper.
+        /// </summary>
+        /// <param name="batchingWrapper"></param>
+        /// <returns></returns>
+        Task FlushBatch(MBBatchingWrapper batchingWrapper);
     }
 }
