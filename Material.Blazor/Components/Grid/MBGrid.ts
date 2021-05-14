@@ -44,8 +44,6 @@ export function getTextWidths(
     className: string,
     currentWidths: number[],
     textToMeasure: string[]): number[] {
-    // Log the entry time
-    console.log("Entry " + new Date().toString());
 
     // Create an element
     const ele: HTMLDivElement = document.createElement('div');
@@ -62,8 +60,8 @@ export function getTextWidths(
     // Append to the body
     document.body.appendChild(ele);
 
-    // Log another time
-    console.log("Above for " + new Date().toString());
+    // Log time
+//    console.log("Prior to for loop in getTextWidths " + new Date().toString());
 
     for (let i = 0; i < textToMeasure.length; i++) {
         // Set the text
@@ -80,11 +78,12 @@ export function getTextWidths(
         }
     }
 
+    // Log time
+//    console.log("Completed for loop in getTextWidths " + new Date().toString());
+
     // Remove the element
     document.body.removeChild(ele);
 
-    // Log another time
-    console.log("Above return " + new Date().toString());
 
     return currentWidths;
 }

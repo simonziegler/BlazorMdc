@@ -57,11 +57,49 @@
     </Controls>
 
     <PageContent>
+
         <div class="mdc-layout-grid__cell--span-12">
             <MBCard AutoStyled="true">
                 <Primary>
                     <h2 class="mb-card__title mdc-typography mdc-typography--headline6">
-                        Single Line List
+                        Single Line List with a Primary Action
+                    </h2>
+
+                    <div class="overflow-auto">
+                        <p>
+                            <MBList Items="@SingleLineProducts"
+                                    Context="product"
+                                    GetKeysFunc="@((item) => item.ProductId)"
+                                    HideLineThree="@HideLineThree"
+                                    HideLineTwo="@HideLineTwo"
+                                    KeyboardInteractions="@KeyboardInteractions"
+                                    ListStyle="MBListStyle.Outlined"
+                                    ListType="@ListType"
+                                    OnClick="OnSingleLinePrimaryClick"
+                                    Ripple="@Ripple"
+                                    ShowSeparators="false">
+
+                                <Title>@product.DisplayName</Title>
+
+                                <PrimaryActions>
+                                    <div style="width: 10rem">
+                                        <MBCheckbox @bind-Value="@product.IsInStock" />
+                                    </div>
+                                </PrimaryActions>
+
+                            </MBList>
+                        </p>
+                    </div>
+                </Primary>
+            </MBCard>
+        </div>
+
+
+        <div class="mdc-layout-grid__cell--span-12">
+            <MBCard AutoStyled="true">
+                <Primary>
+                    <h2 class="mb-card__title mdc-typography mdc-typography--headline6">
+                        Single Line List with a Secondary Action
                     </h2>
 
                     <h3 class="mb-card__subtitle mdc-typography mdc-typography--subtitle2">
@@ -83,12 +121,12 @@
 
                                 <Icon><MBIcon IconName="local_grocery_store" /></Icon>
                                 <Title>@product.DisplayName</Title>
-                                <Actions>
+                                <SecondaryActions>
                                     <div style="width: 10rem">
                                         <MBSwitch @bind-Value="@product.IsInStock"
                                                   Label="@(product.IsInStock ? "In stock" : "Out of stock")" />
                                     </div>
-                                </Actions>
+                                </SecondaryActions>
                             </MBList>
                         </p>
                     </div>
@@ -124,12 +162,12 @@
                                 <Icon><MBIcon IconName="local_grocery_store" /></Icon>
                                 <Title>@product.DisplayName</Title>
                                 <LineTwo>@product.LineTwo</LineTwo>
-                                <Actions>
+                                <SecondaryActions>
                                     <div style="width: 10rem">
                                         <MBSwitch @bind-Value="@product.IsInStock"
                                                   Label="@(product.IsInStock ? "In stock" : "Out of stock")" />
                                     </div>
-                                </Actions>
+                                </SecondaryActions>
                             </MBList>
                         </p>
                     </div>
@@ -170,18 +208,19 @@
                                 <Title>@product.DisplayName</Title>
                                 <LineTwo>@product.LineTwo</LineTwo>
                                 <LineThree>@product.LineThree</LineThree>
-                                <Actions>
+                                <SecondaryActions>
                                     <div style="width: 10rem">
                                         <MBSwitch @bind-Value="@product.IsInStock"
                                                   Label="@(product.IsInStock ? "In stock" : "Out of stock")" />
                                     </div>
-                                </Actions>
+                                </SecondaryActions>
                             </MBList>
                         </p>
                     </div>
                 </Primary>
             </MBCard>
         </div>
+
     </PageContent>
 </DemonstrationPage>
 
@@ -242,6 +281,12 @@
     private void OnSingleLineClick(int index)
     {
         ToastService.ShowToast(heading: "Single Line Click", message: $"Line {index} clicked", level: MBToastLevel.Success, showIcon: false);
+    }
+
+
+    private void OnSingleLinePrimaryClick(int index)
+    {
+        ToastService.ShowToast(heading: "Single Line with Primary Action Click", message: $"Line {index} clicked", level: MBToastLevel.Success, showIcon: false);
     }
 
 

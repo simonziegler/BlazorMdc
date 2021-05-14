@@ -1,6 +1,6 @@
 ﻿using Material.Blazor.Internal;
+
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace Material.Blazor
 {

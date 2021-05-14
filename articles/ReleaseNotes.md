@@ -25,9 +25,13 @@ NOT YET RELEASED
 
 - Added an internal logging service for M.B. It's logging level can be controlled using the AddMBServices service extension with the new loggingLevelServiceConfiguration parameter.
 
+- Support PrimaryActions & SecondaryActions in MBList.
+
 **New components**
 
 **Breaking Changes**
+
+- MBList Actions parameter is renamed to SecondaryActions.
 
 
 #### [2.0.0-preview.6](https://github.com/Material-Blazor/Material.Blazor/tree/2.0.0-preview.5)

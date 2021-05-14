@@ -1,109 +1,114 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFrameworks>net5.0</TargetFrameworks>
-    <RazorLangVersion>3.0</RazorLangVersion>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <VersionPrefix>2.0.0</VersionPrefix>
-    <VersionSuffix>aaa1</VersionSuffix>
-    <PackageLicenseFile></PackageLicenseFile>
-    <Authors>Simon Ziegler of Dioptra and Mark Stega of Optimium Health</Authors>
-    <Company>Material.Blazor</Company>
-    <Description>A lightweight Material Theme component library for Blazor. Intended to adhere rigorously to Material Theme guidelines in https://material.io. API and other documentation can be found at https://material-blazor.com/docs.</Description>
-    <RepositoryUrl>https://github.com/Material-Blazor/Material.Blazor</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReleaseNotes></PackageReleaseNotes>
-    <NeutralLanguage>en</NeutralLanguage>
-    <Copyright>Dioptra and Optimium Health</Copyright>
-    <PackageProjectUrl>https://material-blazor.com</PackageProjectUrl>
-    <Product>Material.Blazor</Product>
-    <UserSecretsId>d7509b6c-bc5c-4a56-a750-09c8ae4aeb85</UserSecretsId>
-    <Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net5.0</TargetFrameworks>
+        <RazorLangVersion>3.0</RazorLangVersion>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <VersionPrefix>2.0.0</VersionPrefix>
+        <VersionSuffix>aaa1</VersionSuffix>
+        <Authors>Simon Ziegler of Dioptra and Mark Stega of Optimium Health</Authors>
+        <Company>Material.Blazor</Company>
+        <Description>A lightweight Material Theme component library for Blazor. Intended to adhere rigorously to Material Theme guidelines in https://material.io. API and other documentation can be found at https://material-blazor.com/docs.</Description>
+        <RepositoryUrl>https://github.com/Material-Blazor/Material.Blazor</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageLicenseFile></PackageLicenseFile>
+        <!--<PackageReadmeFile>README.md</PackageReadmeFile>-->
+        <PackageReleaseNotes></PackageReleaseNotes>
+        <NeutralLanguage>en</NeutralLanguage>
+        <Copyright>Dioptra and Optimium Health</Copyright>
+        <PackageProjectUrl>https://material-blazor.com</PackageProjectUrl>
+        <Product>Material.Blazor</Product>
+        <UserSecretsId>d7509b6c-bc5c-4a56-a750-09c8ae4aeb85</UserSecretsId>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-  </PropertyGroup>
+    <PropertyGroup>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+    <PropertyGroup>
+        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>5</WarningLevel>
-  </PropertyGroup>
+    <!--<ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>-->
 
-  <ItemGroup>
-    <Content Remove="package-lock.json" />
-    <Content Remove="package.json" />
-    <Content Remove="tsconfig.json" />
-  </ItemGroup>
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.5" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <WarningLevel>5</WarningLevel>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Include="package-lock.json" />
-    <None Include="package.json" />
-    <None Include="tsconfig.json" />
-  </ItemGroup>
+    <ItemGroup>
+        <Content Remove="package-lock.json" />
+        <Content Remove="package.json" />
+        <Content Remove="tsconfig.json" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Scripts\MaterialBlazor.ts">
-      <SubType>Code</SubType>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <InputStaticAssetsScripts Include="components\**\*.ts;scripts\**\*.ts" />
-    <OutputStaticAssetsScripts Include="wwwroot\materialblazor.js;wwwroot\materialblazor.min.js" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="package-lock.json" />
+        <None Include="package.json" />
+        <None Include="tsconfig.json" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <InputStaticAssetsStyles Include="components\**\*.scss;styles\**\*.scss;" />
-    <OutputStaticAssetsStyles Include="wwwroot\materialblazor.css;wwwroot\materialblazor.min.css;wwwroot\material.css;wwwroot\material.min.css" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Scripts\MaterialBlazor.ts">
+            <SubType>Code</SubType>
+        </None>
+    </ItemGroup>
 
-  <Target Name="CheckIfNpmExists" BeforeTargets="PreBuildEvent">
-    <Exec Command="npm --version" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low" LogStandardErrorAsError="false" IgnoreExitCode="true">
-      <Output TaskParameter="ExitCode" PropertyName="NpmReturnCode" />
-    </Exec>
-  </Target>
+    <ItemGroup>
+        <InputStaticAssetsScripts Include="components\**\*.ts;scripts\**\*.ts" />
+        <OutputStaticAssetsScripts Include="wwwroot\materialblazor.js;wwwroot\materialblazor.min.js" />
+    </ItemGroup>
 
-  <Target Name="ErrorOutput" BeforeTargets="PreBuildEvent" AfterTargets="CheckIfNpmExists" Condition=" '$(NpmReturnCode)' != '0' ">
-    <Message Importance="high" Text="**********************************************************************************" />
-    <Message Importance="high" Text="**********************************************************************************" />
-    <Message Importance="high" Text="**********************************************************************************" />
-    <Message Importance="high" Text="***** 'npm --version' return code was $(NpmReturnCode)" />
-    <Message Importance="high" Text="CSS and JS not built due to the lack of a proper development environment" />
-    <Message Importance="high" Text="See https://material-blazor.com/docs/articles/DevelopmentEnvironment.html" />
-    <Message Importance="high" Text="If the return code is 1, check package.json and package-lock.json" />
-    <Message Importance="high" Text="If the return code is 9009, npm is not present" />
-    <Message Importance="high" Text="For other non-zero return codes, check npm documentation" />
-    <Message Importance="high" Text="**********************************************************************************" />
-    <Message Importance="high" Text="**********************************************************************************" />
-    <Message Importance="high" Text="**********************************************************************************" />
-  </Target>
+    <ItemGroup>
+        <InputStaticAssetsStyles Include="components\**\*.scss;styles\**\*.scss;" />
+        <OutputStaticAssetsStyles Include="wwwroot\materialblazor.css;wwwroot\materialblazor.min.css;wwwroot\material.css;wwwroot\material.min.css" />
+    </ItemGroup>
 
-  <UsingTask TaskName="DeduplicateLicenseHeaders" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-    <ParameterGroup>
-      <SourceFile ParameterType="System.String" Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System" />
-      <Using Namespace="System.Collections.Generic" />
-      <Using Namespace="System.IO" />
-      <Using Namespace="System.Linq" />
-      <Using Namespace="System.Text" />
-      <Using Namespace="System.Text.RegularExpressions" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
+    <Target Name="CheckIfNpmExists" BeforeTargets="PreBuildEvent">
+        <Exec Command="npm --version" ContinueOnError="true" StandardOutputImportance="low" StandardErrorImportance="low" LogStandardErrorAsError="false" IgnoreExitCode="true">
+            <Output TaskParameter="ExitCode" PropertyName="NpmReturnCode" />
+        </Exec>
+    </Target>
+
+    <Target Name="ErrorOutput" BeforeTargets="PreBuildEvent" AfterTargets="CheckIfNpmExists" Condition=" '$(NpmReturnCode)' != '0' ">
+        <Message Importance="high" Text="**********************************************************************************" />
+        <Message Importance="high" Text="**********************************************************************************" />
+        <Message Importance="high" Text="**********************************************************************************" />
+        <Message Importance="high" Text="***** 'npm --version' return code was $(NpmReturnCode)" />
+        <Message Importance="high" Text="CSS and JS not built due to the lack of a proper development environment" />
+        <Message Importance="high" Text="See https://material-blazor.com/docs/articles/DevelopmentEnvironment.html" />
+        <Message Importance="high" Text="If the return code is 1, check package.json and package-lock.json" />
+        <Message Importance="high" Text="If the return code is 9009, npm is not present" />
+        <Message Importance="high" Text="For other non-zero return codes, check npm documentation" />
+        <Message Importance="high" Text="**********************************************************************************" />
+        <Message Importance="high" Text="**********************************************************************************" />
+        <Message Importance="high" Text="**********************************************************************************" />
+    </Target>
+
+    <UsingTask TaskName="DeduplicateLicenseHeaders" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <SourceFile ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System" />
+            <Using Namespace="System.Collections.Generic" />
+            <Using Namespace="System.IO" />
+            <Using Namespace="System.Linq" />
+            <Using Namespace="System.Text" />
+            <Using Namespace="System.Text.RegularExpressions" />
+            <Code Type="Fragment" Language="cs">
+                <![CDATA[
           var input = File.ReadAllText(SourceFile);
           HashSet<string> knownLicenseHeaders = new();
           int startIndex = 0;
@@ -147,69 +152,68 @@
           input = input.Replace("\n\n", "\n").Replace("\n\n", "\n").Replace("\n\n", "\n");
           File.WriteAllText(SourceFile, input);
                 ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-  <Target Name="BuildScripts" Inputs="@(InputStaticAssetsScripts)" Outputs="@(OutputStaticAssetsScripts)" BeforeTargets="PreBuildEvent" AfterTargets="CheckIfNpmExists" Condition=" '$(NpmReturnCode)' == '0' ">
-    <Message Importance="high" Text="***** MakeDir wwwroot (M.B Scripts)" />
-    <MakeDir Directories="wwwroot" />
+            </Code>
+        </Task>
+    </UsingTask>
+    <Target Name="BuildScripts" Inputs="@(InputStaticAssetsScripts)" Outputs="@(OutputStaticAssetsScripts)" BeforeTargets="PreBuildEvent" AfterTargets="CheckIfNpmExists" Condition=" '$(NpmReturnCode)' == '0' ">
+        <Message Importance="high" Text="***** MakeDir wwwroot (M.B Scripts)" />
+        <MakeDir Directories="wwwroot" />
 
-    <Message Importance="high" Text="***** npm install" />
-    <Exec Command="npm install" />
+        <Message Importance="high" Text="***** npm install" />
+        <Exec Command="npm install" />
 
-    <Delete Files="node_modules\@material\segmented-button\segment\adapter.ts;node_modules\@material\segmented-button\segment\component.ts;node_modules\@material\segmented-button\segment\constants.ts;node_modules\@material\segmented-button\segment\foundation.ts;node_modules\@material\segmented-button\segment\index.ts" />
-    <Delete Files="node_modules\@material\segmented-button\segmented-button\adapter.ts;node_modules\@material\segmented-button\segmented-button\component.ts;node_modules\@material\segmented-button\segmented-button\constants.ts;node_modules\@material\segmented-button\segmented-button\foundation.ts;node_modules\@material\segmented-button\segmented-button\index.ts" />
-    <Delete Files="node_modules\@material\tooltip\component.ts;node_modules\@material\tooltip\constants.ts;node_modules\@material\tooltip\foundation.ts" />
+        <Delete Files="node_modules\@material\segmented-button\segment\adapter.ts;node_modules\@material\segmented-button\segment\component.ts;node_modules\@material\segmented-button\segment\constants.ts;node_modules\@material\segmented-button\segment\foundation.ts;node_modules\@material\segmented-button\segment\index.ts" />
+        <Delete Files="node_modules\@material\segmented-button\segmented-button\adapter.ts;node_modules\@material\segmented-button\segmented-button\component.ts;node_modules\@material\segmented-button\segmented-button\constants.ts;node_modules\@material\segmented-button\segmented-button\foundation.ts;node_modules\@material\segmented-button\segmented-button\index.ts" />
+        <Delete Files="node_modules\@material\tooltip\component.ts;node_modules\@material\tooltip\constants.ts;node_modules\@material\tooltip\foundation.ts" />
 
-    <Message Importance="high" Text="***** npm run build-scripts" />
-    <Exec Command="npm run build-scripts" />
+        <Message Importance="high" Text="***** npm run build-scripts" />
+        <Exec Command="npm run build-scripts" />
 
-    <Message Importance="high" Text="***** npm run build-js" />
-    <Exec Command="npm run build-js" />
+        <Message Importance="high" Text="***** npm run build-js" />
+        <Exec Command="npm run build-js" />
 
-    <Message Importance="high" Text="***** npm run build-min-js" />
-    <Exec Command="npm run build-min-js" />
+        <Message Importance="high" Text="***** npm run build-min-js" />
+        <Exec Command="npm run build-min-js" />
 
-    <Message Importance="high" Text="***** delete intermediate.js" />
-    <Delete Files="wwwroot\intermediate.js" />
+        <Message Importance="high" Text="***** delete intermediate.js" />
+        <Delete Files="wwwroot\intermediate.js" />
 
+        <DeduplicateLicenseHeaders SourceFile="wwwroot\MaterialBlazor.min.js" />
 
-    <DeduplicateLicenseHeaders SourceFile="wwwroot\MaterialBlazor.min.js" />
-    
-  </Target>
+    </Target>
 
-  <Target Name="BuildStyles" Inputs="@(InputStaticAssetsStyles)" Outputs="@(OutputStaticAssetsStyles)" BeforeTargets="PreBuildEvent" AfterTargets="CheckIfNpmExists" Condition=" '$(NpmReturnCode)' == '0' ">
-    <Message Importance="high" Text="***** mkdir wwwroot (M.B Styles)" />
-    <MakeDir Directories="wwwroot" />
+    <Target Name="BuildStyles" Inputs="@(InputStaticAssetsStyles)" Outputs="@(OutputStaticAssetsStyles)" BeforeTargets="PreBuildEvent" AfterTargets="CheckIfNpmExists" Condition=" '$(NpmReturnCode)' == '0' ">
+        <Message Importance="high" Text="***** mkdir wwwroot (M.B Styles)" />
+        <MakeDir Directories="wwwroot" />
 
-    <Message Importance="high" Text="***** npm install" />
-    <Exec Command="npm install" />
+        <Message Importance="high" Text="***** npm install" />
+        <Exec Command="npm install" />
 
-    <!--<Message Importance="high" Text="***** downloadfiles" />
+        <!--<Message Importance="high" Text="***** downloadfiles" />
     <DownloadFile SourceUrl="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot" DestinationFilename="material-components-icons.css">
     </DownloadFile>-->
 
-    <Message Importance="high" Text="***** npm run build-css" />
-    <Exec Command="npm run build-css" />
+        <Message Importance="high" Text="***** npm run build-css" />
+        <Exec Command="npm run build-css" />
 
-    <Message Importance="high" Text="***** npm run build-min-css" />
-    <Exec Command="npm run build-min-css" />
+        <Message Importance="high" Text="***** npm run build-min-css" />
+        <Exec Command="npm run build-min-css" />
 
-    <!--<Message Importance="high" Text="***** delete material-components-icons.css" />
+        <!--<Message Importance="high" Text="***** delete material-components-icons.css" />
     <Delete Files="wwwroot\material-components-icons.css" />-->
 
-    <Message Importance="high" Text="***** npm run build-material-css" />
-    <Exec Command="npm run build-material-css" />
+        <Message Importance="high" Text="***** npm run build-material-css" />
+        <Exec Command="npm run build-material-css" />
 
-    <Message Importance="high" Text="***** npm run build-material-min-css" />
-    <Exec Command="npm run build-material-min-css" />
+        <Message Importance="high" Text="***** npm run build-material-min-css" />
+        <Exec Command="npm run build-material-min-css" />
 
-  </Target>
+    </Target>
 
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties />
-    </VisualStudio>
-  </ProjectExtensions>
+    <ProjectExtensions>
+        <VisualStudio>
+            <UserProperties />
+        </VisualStudio>
+    </ProjectExtensions>
 
 </Project>

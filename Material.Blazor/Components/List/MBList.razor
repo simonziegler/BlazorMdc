@@ -34,6 +34,11 @@
             @onkeydown="@(() => OnItemKeyDownAsync(clickIndex))"
             @ontouchstart="@(() => OnItemTouchStartAsync(clickIndex))">
 
+            @if (PrimaryActions != null)
+            {
+                <span class="mdc-list-item__graphic" aria-hidden="true">@PrimaryActions(item)</span>
+            }
+
             @if (!SuppressIcons && Icon != null)
             {
                 <span class="mdc-list-item__graphic" aria-hidden="true">@Icon(item)</span>
@@ -61,9 +66,9 @@
                 }
             </span>
 
-            @if (Actions != null)
+            @if (SecondaryActions != null)
             {
-                <span class="mdc-list-item__meta" aria-hidden="true">@Actions(item)</span>
+                <span class="mdc-list-item__meta" aria-hidden="true">@SecondaryActions(item)</span>
             }
         </li>
     }

@@ -67,9 +67,15 @@ namespace Material.Blazor
 
 
         /// <summary>
-        /// The actions render fragment.
+        /// The primary actions render fragment.
         /// </summary>
-        [Parameter] public RenderFragment<TItem> Actions { get; set; }
+        [Parameter] public RenderFragment<TItem> PrimaryActions { get; set; }
+
+
+        /// <summary>
+        /// The secondary actions render fragment.
+        /// </summary>
+        [Parameter] public RenderFragment<TItem> SecondaryActions { get; set; }
 
 
         /// <summary>
