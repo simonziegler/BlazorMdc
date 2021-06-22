@@ -18,14 +18,14 @@ namespace Material.Blazor.Internal
 
         private string Leading => Snackbar.Settings.AppliedLeading ? "mdc-snackbar--leading" : null;
 
-        private DotNetObjectReference<InternalSnackbar> ObjectReference { get; set; }
+        private NoThrowDotNetObjectReference<InternalSnackbar> ObjectReference { get; set; }
 
 
         // Would like to use <inheritdoc/> however DocFX cannot resolve to references outside Material.Blazor
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 

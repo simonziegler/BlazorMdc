@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Material.Blazor
 {
+
     /// <summary>
     /// This is a general purpose Material Theme menu.
     /// </summary>
@@ -22,7 +23,7 @@ namespace Material.Blazor
         [Parameter] public MBMenuSurfacePositioning MenuSurfacePositioning { get; set; } = MBMenuSurfacePositioning.Regular;
 
 
-        private DotNetObjectReference<MBMenuSurface> ObjectReference { get; set; }
+        private NoThrowDotNetObjectReference<MBMenuSurface> ObjectReference { get; set; }
         private ElementReference ElementReference { get; set; }
         private bool IsOpen { get; set; } = false;
 
@@ -35,7 +36,7 @@ namespace Material.Blazor
             _ = ConditionalCssClasses
                 .AddIf(GetMenuSurfacePositioningClass(MenuSurfacePositioning), () => MenuSurfacePositioning != MBMenuSurfacePositioning.Regular);
 
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 

@@ -24,6 +24,7 @@ namespace Material.Blazor.Internal
         private static readonly ImmutableArray<string> EssentialSplattableAttributes = ImmutableArray.Create("formnovalidate", "max", "min", "role", "step", "tabindex", "type", "data-prev-page");
         private bool? disabled = null;
 
+        [Inject] protected INoThrowDotNetObjectReferenceFactory NoThrowDotNetObjectReferenceFactory { get; set; }
         [Inject] private IBatchingJSRuntime InjectedJsRuntime { get; set; }
         protected IBatchingJSRuntime JsRuntime { get; set; }
         [CascadingParameter] private MBDialog ParentDialog { get; set; }

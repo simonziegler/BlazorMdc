@@ -26,6 +26,7 @@ namespace Material.Blazor
         {
             return services
                 .AddScoped<IBatchingJSRuntime, BatchingJSRuntime>()
+                .AddScoped<INoThrowDotNetObjectReferenceFactory, NoThrowDotNetObjectReferenceFactory>()
                 .AddMBAnimatedNavigationService(animatedNavigationManagerServiceConfiguration)
                 .AddMBLoggingService(loggingServiceConfiguration)
                 .AddMBSnackbarService(snackbarServiceConfiguration)

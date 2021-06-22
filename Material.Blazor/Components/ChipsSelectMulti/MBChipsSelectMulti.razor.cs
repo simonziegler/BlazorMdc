@@ -31,7 +31,7 @@ namespace Material.Blazor
         private ElementReference ChipsReference { get; set; }
         private MBIconBearingSelectElement<TItem>[] ItemsArray { get; set; }
         private bool IsSingleSelect { get; set; }
-        private DotNetObjectReference<MBChipsSelectMulti<TItem>> ObjectReference { get; set; }
+        private NoThrowDotNetObjectReference<MBChipsSelectMulti<TItem>> ObjectReference { get; set; }
 
 
         // Would like to use <inheritdoc/> however DocFX cannot resolve to references outside Material.Blazor
@@ -81,7 +81,7 @@ namespace Material.Blazor
             SetComponentValue += OnValueSetCallback;
             OnDisabledSet += OnDisabledSetCallback;
 
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 

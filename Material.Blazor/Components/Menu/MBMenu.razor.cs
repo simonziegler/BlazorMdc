@@ -23,7 +23,7 @@ namespace Material.Blazor
         [Parameter] public MBMenuSurfacePositioning MenuSurfacePositioning { get; set; } = MBMenuSurfacePositioning.Regular;
 
 
-        private DotNetObjectReference<MBMenu> ObjectReference { get; set; }
+        private NoThrowDotNetObjectReference<MBMenu> ObjectReference { get; set; }
         private ElementReference ElementReference { get; set; }
         private bool IsOpen { get; set; } = false;
 
@@ -36,7 +36,7 @@ namespace Material.Blazor
             ConditionalCssClasses
                 .AddIf(GetMenuSurfacePositioningClass(MenuSurfacePositioning), () => MenuSurfacePositioning != MBMenuSurfacePositioning.Regular);
 
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 

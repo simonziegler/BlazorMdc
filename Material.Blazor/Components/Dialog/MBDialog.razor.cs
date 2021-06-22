@@ -64,7 +64,7 @@ namespace Material.Blazor
         private bool HasButtons => Buttons != null;
         private bool HasCustomHeader => CustomHeader != null;
         private bool HasTitle => !string.IsNullOrWhiteSpace(Title);
-        private DotNetObjectReference<MBDialog> ObjectReference { get; set; }
+        private NoThrowDotNetObjectReference<MBDialog> ObjectReference { get; set; }
         private string OverflowClass => OverflowVisible ? "mb-dialog-overflow-visible" : "";
 
 
@@ -85,7 +85,7 @@ namespace Material.Blazor
         {
             await base.OnInitializedAsync();
 
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 

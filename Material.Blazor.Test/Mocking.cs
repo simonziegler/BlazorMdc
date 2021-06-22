@@ -17,6 +17,7 @@ namespace Testing
             ctx = new();
             _ = ctx.Services
                 .AddSingleton(new Mock<IBatchingJSRuntime>().Object)
+                .AddSingleton(new Mock<INoThrowDotNetObjectReferenceFactory>().Object)
                 .AddSingleton(new Mock<IMBLoggingService>().Object)
                 .AddSingleton(new Mock<IMBTooltipService>().Object)
                 .AddSingleton(new Mock<IMBToastService>().Object)

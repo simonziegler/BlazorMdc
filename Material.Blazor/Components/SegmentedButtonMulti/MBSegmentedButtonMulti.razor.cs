@@ -69,7 +69,7 @@ namespace Material.Blazor
             SetComponentValue += OnValueSetCallback;
             OnDisabledSet += OnDisabledSetCallback;
 
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 

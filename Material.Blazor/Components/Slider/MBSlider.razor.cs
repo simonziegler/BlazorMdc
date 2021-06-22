@@ -62,7 +62,7 @@ namespace Material.Blazor
         private ElementReference ElementReference { get; set; }
         private string Format { get; set; }
         private MarkupString InputMarkup { get; set; }
-        private DotNetObjectReference<MBSlider> ObjectReference { get; set; }
+        private NoThrowDotNetObjectReference<MBSlider> ObjectReference { get; set; }
         private decimal RangePercentDecimal { get; set; }
         private int TabIndex { get; set; }
         private decimal ThumbEndPercent => 100 * RangePercentDecimal;
@@ -110,7 +110,7 @@ namespace Material.Blazor
             SetComponentValue += OnValueSetCallback;
             OnDisabledSet += OnDisabledSetCallback;
 
-            ObjectReference = DotNetObjectReference.Create(this);
+            ObjectReference = NoThrowDotNetObjectReferenceFactory.Create(this);
         }
 
 
