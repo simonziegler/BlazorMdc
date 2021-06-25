@@ -1,7 +1,4 @@
-﻿using Material.Blazor.Internal;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -9,19 +6,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Material.Blazor.Internal;
+
+using Microsoft.AspNetCore.Components;
+
 namespace Material.Blazor
 {
     /// <summary>
     /// A blade display component. Adds blades to the right hand side of the viewport (or bock where this component is located), with
     /// blades displayed left to right in ascending order of when they were requested (newest blades to the right).
     /// </summary>
-    public partial class MBBladeSet
+    public partial class MBBladeSet : ComponentFoundation
     {
         private const int transitionMs = 200;
-
-        [Inject] private ILogger<MBBladeSet> Logger { get; set; }
-        [Inject] private IBatchingJSRuntime JsRuntime { get; set; }
-
 
         /// <summary>
         /// The three states in a blade's lifecycle.

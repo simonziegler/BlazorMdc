@@ -6,11 +6,11 @@
 
     <ul class="mdc-list mb-dp-list">
         <li class="mdc-list-item mdc-list-item--selected mb-dp-list-item"
-            data-value="@CachedComponentValueText"
+            data-value="@ValueText"
             aria-selected="true"
             role="option">
             <span class="mdc-list-item__ripple"></span>
-            <span @ref="@ListItemReference" class="mdc-list-item__text mb-dp-list-item__text">@CachedComponentValueText</span>
+            <span @ref="@ListItemReference" class="mdc-list-item__text mb-dp-list-item__text">@ValueText</span>
         </li>
     </ul>
 
@@ -54,17 +54,21 @@
     @if (ShowYearPad)
     {
         <div class="mb-dp-year-pad">
-            @foreach (var year in Years)
-            {
-                <InternalDatePickerYearButton CurrentYear="@StartOfDisplayMonth.Year"
-                                              CurrentYearId="@currentYearId"
-                                              DisplayYear="@year"
-                                              @key="@year"
-                                              MaxDate="@MaxDate"
-                                              MinDate="@MinDate"
-                                              OnItemClickAsync="@OnYearItemClick" 
-                                              type="button"/>
-            }
+            <Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize Items="YearsInGroupsOfFour" OverscanCount="10" ItemSize="36">
+                <ItemContent Context="group">
+                    @foreach (var year in group)
+                    {
+                        <InternalDatePickerYearButton CurrentYear="@StartOfDisplayMonth.Year"
+                                                      CurrentYearId="@currentYearId"
+                                                      DisplayYear="@year"
+                                                      @key="@year"
+                                                      MaxDate="@MaxDate"
+                                                      MinDate="@MinDate"
+                                                      OnItemClickAsync="@OnYearItemClick"
+                                                      type="button" />
+                    }
+                </ItemContent>
+            </Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize>
         </div>
     }
     else
@@ -79,7 +83,7 @@
             <div class="mdc-list mb-dp-day-pad__days-block">
                 @foreach (var date in Dates)
                 {
-                    <InternalDatePickerDayButton CurrentDate="@ComponentValue"
+                    <InternalDatePickerDayButton CurrentDate="@Value"
                                                  DateIsSelectable="@DateIsSelectable"
                                                  DateSelectionCriteria="@DateSelectionCriteria"
                                                  DisplayDate="@date"

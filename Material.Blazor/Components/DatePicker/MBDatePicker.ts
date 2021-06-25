@@ -13,7 +13,20 @@ export function listItemClick(elem, elemText) {
     elem.click();
 }
 
+function tryScrollToYear(id, attempt: number) {
+    setTimeout(() => {
+        var element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
+        } else {
+            if (attempt < 10) {
+                tryScrollToYear(id, attempt + 1);
+            }
+        }
+    }, 16);
+}
+
 export function scrollToYear(id) {
-    var element = document.getElementById(id);
-    element?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
+    // we allow up to 10 attempts every 16ms, because Virtualize may have not yet rendered the year we want to scroll to.
+    tryScrollToYear(id, 0);
 }

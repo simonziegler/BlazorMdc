@@ -7,6 +7,32 @@ using System.Threading.Tasks;
 
 namespace Material.Blazor.Internal
 {
+    internal static class GroupingExtension
+    {
+        public static IEnumerable<T[]> InGroupsOf<T>(this IEnumerable<T> enumerable, int groupSize)
+        {
+            var group = new T[groupSize];
+            int index = 0;
+            foreach (var element in enumerable)
+            {
+                group[index] = element;
+                ++index;
+                if (index == groupSize)
+                {
+                    yield return group;
+                    index = 0;
+                    group = new T[groupSize];
+                }
+            }
+            if (index > 0)
+            {
+                // the last group has less than groupSize elements, therefore we need to return a trimmed array.
+                yield return group.Take(index).ToArray();
+            }
+        }
+    }
+
+
     /// <summary>
     /// For Material.Blazor internal use only.
     /// </summary>
@@ -39,6 +65,13 @@ namespace Material.Blazor.Internal
 
 
         /// <summary>
+        /// Set to indicate that if the value is default(DateTime) then no date is initially shown
+        /// and the panel will start with the current year and month
+        /// </summary>
+        [Parameter] public bool SupressDefaultDate { get; set; }
+
+
+        /// <summary>
         /// Reference to the <c>&lt;li&gt;</c> embedded in the panel.
         /// </summary>
         internal ElementReference ListItemReference { get; set; }
@@ -54,9 +87,13 @@ namespace Material.Blazor.Internal
 
         private string[] DaysOfWeek { get; set; }
 
-        private bool PreviousMonthDisabled => (StartOfDisplayMonth <= MinDate);
+        private bool PreviousMonthDisabled => false
+            || (StartOfDisplayMonth.Year == DateTime.MinValue.Year && StartOfDisplayMonth.Month == DateTime.MinValue.Month)
+            || (StartOfDisplayMonth <= MinDate);
 
-        private bool NextMonthDisabled => (StartOfDisplayMonth.AddMonths(1) >= MaxDate);
+        private bool NextMonthDisabled => false
+            || (StartOfDisplayMonth.Year == DateTime.MaxValue.Year && StartOfDisplayMonth.Month == DateTime.MaxValue.Month) // special case:
+            || (StartOfDisplayMonth.AddMonths(1) >= MaxDate);
 
         private bool _showYearPad = false;
         internal bool ShowYearPad
@@ -73,24 +110,15 @@ namespace Material.Blazor.Internal
 
         private List<int> Years { get; set; } = new List<int>();
 
-        private DateTime InitialDate { get; set; }
+        private List<int[]> YearsInGroupsOfFour { get; set; } = new List<int[]>();
 
-        private DateTime CachedComponentValue { get; set; }
-
-        private DateTime CachedMinDate { get; set; }
-
-        private DateTime CachedMaxDate { get; set; }
-
-        private string CachedComponentValueText => Utilities.DateToString(CachedComponentValue, DateFormat);
+        private string ValueText => Utilities.DateToString(Value, DateFormat);
 
         private int MonthsOffset { get; set; } = 0;
 
         private DateTime StartOfDisplayMonth { get; set; }
 
         private string MonthText => StartOfDisplayMonth.ToString("MMMM yyyy");
-
-        private bool IsFirstParametersSet { get; set; } = true;
-
 
         private readonly string currentYearId = Utilities.GenerateUniqueElementName();
 
@@ -118,55 +146,79 @@ namespace Material.Blazor.Internal
         {
             await base.OnParametersSetAsync();
 
-            if (IsFirstParametersSet)
-            {
-                IsFirstParametersSet = false;
-                SetParameters(true);
-            }
+            SetParameters();
         }
 
 
-        internal void SetParameters(bool forceSetup, DateTime? newValue = null)
+        internal void SetParameters(DateTime? newValue = null)
         {
-            if (forceSetup || ComponentValue != CachedComponentValue || MinDate != CachedMinDate || MaxDate != CachedMaxDate)
+            if (newValue != null)
             {
-                if (newValue != null)
-                {
-                    Value = (DateTime)newValue;
-                }
-
-                InitialDate = ComponentValue;
-                CachedComponentValue = ComponentValue;
-                CachedMinDate = MinDate;
-                CachedMaxDate = MaxDate;
-                var startDate = StartOfDisplayMonth = new DateTime(ComponentValue.Year, ComponentValue.Month, 1).AddMonths(MonthsOffset);
-                while (startDate.DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek)
-                {
-                    startDate = startDate.AddDays(-1);
-                }
-                var endDate = startDate.AddDays(6 * 7); // 6 lines of 7 days each
-
-                Dates = new List<DateTime>();
-
-                for (var date = startDate; date < endDate; date = date.AddDays(1))
-                {
-                    Dates.Add(date);
-                }
-
-                var startYear = ((MinDate.Year - 1) / 4) * 4 + 1;
-                var endYear = ((MaxDate.Year + 3) / 4) * 4 + 1;
-
-                Years = new List<int>();
-
-                for (var year = startYear; year < endYear; year++)
-                {
-                    Years.Add(year);
-                }
-
-                ShowYearPad = false;
-
-                StateHasChanged();
+                Value = (DateTime)newValue;
             }
+
+            DateTime startDate;
+            int startDateYear;
+            int startDateMonth;
+            var today = DateTime.Today;
+
+            if (SupressDefaultDate &&
+                (Value == default) &&
+                (today >= MinDate) &&
+                (today <= MaxDate))
+            {
+                startDateYear = today.Year;
+                startDateMonth = today.Month;
+            }
+            else
+            {
+                startDateYear = Value.Year;
+                startDateMonth = Value.Month;
+            }
+
+            try
+            {
+                startDate = StartOfDisplayMonth = new DateTime(startDateYear, startDateMonth, 1).AddMonths(MonthsOffset);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                startDate = StartOfDisplayMonth = new DateTime(DateTime.MaxValue.Year, DateTime.MaxValue.Month, 1);
+            }
+            while (startDate.Date > DateTime.MinValue.Date && startDate.DayOfWeek != CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek)
+            {
+                startDate = startDate.AddDays(-1);
+            }
+            DateTime endDate;
+            try
+            {
+                endDate = startDate.AddDays(6 * 7); // 6 lines of 7 days each
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                endDate = DateTime.MaxValue.Date;
+            }
+
+            Dates = new List<DateTime>();
+
+            for (var date = startDate; date < endDate; date = date.AddDays(1))
+            {
+                Dates.Add(date);
+            }
+
+            var startYear = Math.Max(DateTime.MinValue.Year, ((MinDate.Year - 1) / 4) * 4 + 1);
+            var endYear = Math.Min(DateTime.MaxValue.Year, ((MaxDate.Year + 3) / 4) * 4);
+
+            Years = new List<int>();
+
+            for (var year = startYear; year <= endYear; year++)
+            {
+                Years.Add(year);
+            }
+            YearsInGroupsOfFour = Years.InGroupsOf(4).ToList();
+
+            ShowYearPad = false;
+
+            StateHasChanged();
         }
 
 
@@ -175,9 +227,8 @@ namespace Material.Blazor.Internal
             // Invoke JS first. if ComponentValue is set first we are at risk of this element being re-rendered before this line is run, making ListItemReference stale and causing a JS exception.
             await JsRuntime.InvokeVoidAsync("MaterialBlazor.MBDatePicker.listItemClick", ListItemReference, Utilities.DateToString(dateTime, DateFormat));
             ComponentValue = dateTime;
-            CachedComponentValue = Value;
             MonthsOffset = 0;
-            SetParameters(true);
+            SetParameters();
         }
 
 
@@ -185,28 +236,28 @@ namespace Material.Blazor.Internal
         {
             MonthsOffset += (year - StartOfDisplayMonth.Year) * 12;
             ShowYearPad = false;
-            SetParameters(true);
+            SetParameters();
         }
 
 
         private void OnPreviousMonthClick()
         {
             MonthsOffset--;
-            SetParameters(true);
+            SetParameters();
         }
 
 
         private void OnShowCurrentDateClick()
         {
             MonthsOffset = 0;
-            SetParameters(true);
+            SetParameters();
         }
 
 
         private void OnNextMonthClick()
         {
             MonthsOffset++;
-            SetParameters(true);
+            SetParameters();
         }
 
 

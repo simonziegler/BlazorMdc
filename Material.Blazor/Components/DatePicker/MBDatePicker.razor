@@ -24,7 +24,9 @@
                 @if (ShowLabel)
                 {
                     <span class="mdc-notched-outline__notch">
-                        <span id="@labelId" class="mdc-floating-label mdc-floating-label--float-above">@Label</span>
+                        <span id="@labelId" class="mdc-floating-label mdc-floating-label--float-above">
+                            @Label
+                        </span>
                     </span>
                 }
 
@@ -42,7 +44,10 @@
         }
 
         <span class="mdc-select__selected-text-container">
-            <span id="@selectedTextId" class="mdc-select__selected-text" aria-disabled="@AppliedDisabled"></span>
+            <span id="@selectedTextId"
+                  class="mdc-select__selected-text"
+                  aria-disabled="@AppliedDisabled"
+                  style="@AdditionalStyle" />
         </span>
 
         <span class="mdc-select__dropdown-icon">
@@ -75,6 +80,7 @@
                                  DateSelectionCriteria="@DateSelectionCriteria"
                                  MaxDate="@MaxDate"
                                  MinDate="@MinDate"
+                                 SupressDefaultDate="@SupressDefaultDate"
                                  @ref="Panel" />
     </div>
 </div>

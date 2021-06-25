@@ -3,10 +3,12 @@
 @inherits InputComponent<int>
 @typeparam TItem
 
+<div class="@(@class)"
+     style="@style">
 
-@if (Icon is null && Label is null)
-{
-    <MBTabBar @bind-Value="@ComponentValue"
+    @if (Icon is null && Label is null)
+    {
+        <MBTabBar @bind-Value="@ComponentValue"
               Context="item"
               Density="@Density"
               Disabled="@AppliedDisabled"
@@ -14,11 +16,11 @@
               Items="@Items"
               StackIcons="@StackIcons">
 
-    </MBTabBar>
-}
-else if (Label is null)
-{
-    <MBTabBar @bind-Value="@ComponentValue"
+        </MBTabBar>
+    }
+    else if (Label is null)
+    {
+        <MBTabBar @bind-Value="@ComponentValue"
               Context="item"
               Density="@Density"
               Disabled="@AppliedDisabled"
@@ -26,12 +28,12 @@ else if (Label is null)
               Items="@Items"
               StackIcons="@StackIcons">
 
-        <Icon>@Icon(item)</Icon>
-    </MBTabBar>
-}
-else if (Icon is null)
-{
-    <MBTabBar @bind-Value="@ComponentValue"
+            <Icon>@Icon(item)</Icon>
+        </MBTabBar>
+    }
+    else if (Icon is null)
+    {
+        <MBTabBar @bind-Value="@ComponentValue"
               Context="item"
               Density="@Density"
               Disabled="@AppliedDisabled"
@@ -39,12 +41,12 @@ else if (Icon is null)
               Items="@Items"
               StackIcons="@StackIcons">
 
-        <Label>@Label(item)</Label>
-    </MBTabBar>
-}
-else
-{
-    <MBTabBar @bind-Value="@ComponentValue"
+            <Label>@Label(item)</Label>
+        </MBTabBar>
+    }
+    else
+    {
+        <MBTabBar @bind-Value="@ComponentValue"
               Context="item"
               Density="@Density"
               Disabled="@AppliedDisabled"
@@ -52,17 +54,19 @@ else
               Items="@Items"
               StackIcons="@StackIcons">
 
-        <Label>@Label(item)</Label>
-        <Icon>@Icon(item)</Icon>
-    </MBTabBar>
-}
+            <Label>@Label(item)</Label>
+            <Icon>@Icon(item)</Icon>
+        </MBTabBar>
+    }
 
 
-<MBSlidingContent Context="item"
-                  ItemIndex="@Value"
-                  Items="@Items">
+    <MBSlidingContent Context="item"
+                      ItemIndex="@Value"
+                      Items="@Items">
 
-    <Content>
-        @Content(item)
-    </Content>
-</MBSlidingContent>
+        <Content>
+            @Content(item)
+        </Content>
+    </MBSlidingContent>
+
+</div>

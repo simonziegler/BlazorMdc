@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Material.Blazor.Internal;
+
+using Microsoft.AspNetCore.Components;
 
 namespace Material.Blazor
 {
@@ -10,7 +13,7 @@ namespace Material.Blazor
     /// with slight sideways motion and fade, or "sliding". Only renders the currently displayed item.
     /// </summary>
     /// <typeparam name="TItem">The content type.</typeparam>
-    public partial class MBSlidingContent<TItem>
+    public partial class MBSlidingContent<TItem> : ComponentFoundation
     {
         private int _itemIndex;
         /// <summary>
@@ -76,9 +79,9 @@ namespace Material.Blazor
 
 
         // Would like to use <inheritdoc/> however DocFX cannot resolve to references outside Material.Blazor
-        protected override void OnParametersSet()
+        protected override async Task OnParametersSetAsync()
         {
-            base.OnParametersSet();
+            await base.OnParametersSetAsync();
 
             if (Items != null)
             {

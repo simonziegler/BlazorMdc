@@ -2,8 +2,10 @@
 
 @typeparam TItem
 
+@inherits ComponentFoundation
 
-<div class="@VisibilityClass">
+<div class="@VisibilityClass @(@class)"
+     style="@style" >
     <div class="@ContentClass">
         @if (Content != null)
         {

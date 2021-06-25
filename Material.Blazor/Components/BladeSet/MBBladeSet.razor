@@ -1,8 +1,8 @@
 ﻿@namespace Material.Blazor
-
+@inherits ComponentFoundation
 
 <CascadingValue Value="@this" IsFixed="true">
-    <mb-bladeset>
+    <mb-bladeset class="@(@class)" style="@style">
         <mb-bladeset-main-content class="@MainContentAdditionalCss" style="@MainContentAdditionalStyles">
             @PageContent
         </mb-bladeset-main-content>

@@ -2,12 +2,11 @@
 @inherits InputComponent<bool>
 
 
-<div @ref="@FormReference" class="mdc-form-field">
+<div @ref="@FormReference" class="mdc-form-field @(@class))" style="@style">
 
     <MBTouchTargetWrapper ApplyTouchTargetWrapper="AppliedTouchTarget">
         <div @ref="@ElementReference"
-             class="mdc-checkbox mdc-checkbox--touch @ActiveConditionalClasses @(@class)"
-             style="@style"
+             class="mdc-checkbox mdc-checkbox--touch @ActiveConditionalClasses"
              id="@id"
              @attributes="@EventAttributesToSplat()">
 

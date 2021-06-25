@@ -17,11 +17,53 @@ namespace Material.Blazor.Internal
     /// <typeparam name="T"></typeparam>
     public abstract class InputComponent<T> : ComponentFoundation
     {
+        #region members
+
         private bool _previousParsingAttemptFailed;
         private ValidationMessageStore _parsingValidationMessages;
         private Type _nullableUnderlyingType;
         private bool _hasSetInitialParameters;
 
+
+        /// <summary>
+        /// Gets the associated EditContext.
+        /// </summary>
+        protected EditContext EditContext { get; private set; }
+
+
+        /// <summary>
+        /// Gets the <see cref="FieldIdentifier"/> for the bound value.
+        /// </summary>
+        protected FieldIdentifier FieldIdentifier { get; private set; }
+
+
+        /// <summary>
+        /// Performs validation only if true. Used by <see cref="MBDebouncedTextField"/> to disable
+        /// form validation for the embedded <see cref="MBTextField"/>, because a debounced field
+        /// should not be in a form.
+        /// </summary>
+        private bool IgnoreFormField => this is MBDebouncedTextField or MultiSelectComponent<T, MBSelectElement<T>>;
+
+        /// <summary>
+        /// Allows <see cref="ShouldRender()"/> to return "true" habitually.
+        /// </summary>
+        private protected bool ForceShouldRenderToTrue { get; set; } = false;
+
+
+        /// <summary>
+        /// Allows <see cref="ShouldRender()"/> to return "true" for the next render only.
+        /// </summary>
+        private bool AllowNextRender = false;
+
+        /// <summary>
+        /// Gets a string that indicates the status of the field being edited. This will include
+        /// some combination of "modified", "valid", or "invalid", depending on the status of the field.
+        /// </summary>
+        protected string FieldClass => !IgnoreFormField ? (EditContext?.FieldCssClass(FieldIdentifier) ?? string.Empty) : string.Empty;
+
+        #endregion
+
+        #region parameters
 
         [CascadingParameter] private EditContext CascadedEditContext { get; set; }
 
@@ -57,26 +99,18 @@ namespace Material.Blazor.Internal
         /// </summary>
         [Parameter] public Expression<Func<T>> ValueExpression { get; set; }
 
+        #endregion
 
-        /// <summary>
-        /// Gets the associated EditContext.
-        /// </summary>
-        protected EditContext EditContext { get; private set; }
+        #region AllowNextShouldRender
 
+        private protected void AllowNextShouldRender()
+        {
+            AllowNextRender = true;
+        }
 
-        /// <summary>
-        /// Gets the <see cref="FieldIdentifier"/> for the bound value.
-        /// </summary>
-        protected FieldIdentifier FieldIdentifier { get; private set; }
+        #endregion
 
-
-        /// <summary>
-        /// Performs validation only if true. Used by <see cref="MBDebouncedTextField"/> to disable
-        /// form validation for the embedded <see cref="MBTextField"/>, because a debounced field
-        /// should not be in a form.
-        /// </summary>
-        private bool IgnoreFormField => this is MBDebouncedTextField or MultiSelectComponent<T, MBSelectElement<T>>;
-
+        #region ComponentValue
 
         /// <summary>
         /// Gets or sets the value of the component. To be used by Material.Blazor components for binding to
@@ -166,18 +200,9 @@ namespace Material.Blazor.Internal
             }
         }
 
+        #endregion
 
-        /// <summary>
-        /// Allows <see cref="ShouldRender()"/> to return "true" habitually.
-        /// </summary>
-        private protected bool ForceShouldRenderToTrue { get; set; } = false;
-
-
-        /// <summary>
-        /// Allows <see cref="ShouldRender()"/> to return "true" for the next render only.
-        /// </summary>
-        private bool AllowNextRender = false;
-
+        #region FormatValueToString
 
         /// <summary>
         /// Formats the value as a string. Derived classes can override this to determine the formating used for <see cref="ComponentValueAsString"/>.
@@ -187,25 +212,63 @@ namespace Material.Blazor.Internal
         protected virtual string FormatValueToString(T value)
             => value?.ToString();
 
+        #endregion
+
+        #region GetExpressionCustomAttributes
 
         /// <summary>
-        /// Parses a string to create an instance of <typeparamref name="T"/>. Derived classes can override this to change how
-        /// <see cref="ComponentValueAsString"/> interprets incoming values.
+        /// Returns the custom attributes assocated with a field. Used by <see cref="MBTextArea"/> and <see cref="MBTextField"/> to
+        /// look for a required attribute.
         /// </summary>
-        /// <param name="value">The string value to be parsed.</param>
-        /// <param name="result">An instance of <typeparamref name="T"/>.</param>
-        /// <param name="validationErrorMessage">If the value could not be parsed, provides a validation error message.</param>
-        /// <returns>True if the value could be parsed; otherwise false.</returns>
-        protected virtual bool TryParseValueFromString(string value, out T result, out string validationErrorMessage)
-            => throw new NotImplementedException($"This component does not parse string inputs. Bind to the '{nameof(ComponentValue)}' property, not '{nameof(ComponentValueAsString)}'.");
+        /// <typeparam name="T"></typeparam>
+        /// <param name="accessor"></param>
+        /// <returns></returns>
+        private static IEnumerable<Attribute> GetExpressionCustomAttributes<TItem>(Expression<Func<TItem>> accessor)
+        {
+            var accessorBody = accessor.Body;
 
+            // Unwrap casts to object
+            if (accessorBody is UnaryExpression unaryExpression
+                && unaryExpression.NodeType == ExpressionType.Convert
+                && unaryExpression.Type == typeof(object))
+            {
+                accessorBody = unaryExpression.Operand;
+            }
+
+            if (accessorBody is not MemberExpression memberExpression)
+            {
+                throw new ArgumentException($"The provided expression contains a {accessorBody.GetType().Name} which is not supported. {nameof(FieldIdentifier)} only supports simple member accessors (fields, properties) of an object.");
+            }
+
+            return memberExpression.Member.GetCustomAttributes();
+        }
+
+        #endregion
+
+        #region HasRequiredAttribute
 
         /// <summary>
-        /// Gets a string that indicates the status of the field being edited. This will include
-        /// some combination of "modified", "valid", or "invalid", depending on the status of the field.
+        /// Returns true if one of the custom attributes is the <see cref="RequiredAttribute"/>. Used by <see cref="MBTextArea"/> and <see cref="MBTextField"/> to
+        /// look for a required attribute.
         /// </summary>
-        protected string FieldClass => !IgnoreFormField ? (EditContext?.FieldCssClass(FieldIdentifier) ?? string.Empty) : string.Empty;
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="accessor"></param>
+        /// <returns></returns>
+        private protected static bool HasRequiredAttribute<TItem>(Expression<Func<TItem>> accessor)
+        {
+            if (accessor == null)
+            {
+                return false;
+            }
 
+            var customAttributes = GetExpressionCustomAttributes<TItem>(accessor);
+
+            return customAttributes.Any(a => a.GetType() == typeof(RequiredAttribute));
+        }
+
+        #endregion
+
+        #region OnInitializedAsync
 
         /// <para>
         /// Components must call base.OnInitializedAsync() otherwise rendering in dialogs will be unpredictable.
@@ -220,6 +283,39 @@ namespace Material.Blazor.Internal
             }
         }
 
+        #endregion
+
+        #region OnParametersSetAsync
+
+        /// <inheritdoc/>
+        protected override async Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+
+            LoggingService.LogTrace($"OnParametersSetAsync setter entered: _cachedValue is '{_cachedValue?.ToString() ?? "null"}' and Value is'{Value?.ToString() ?? "null"}'");
+
+            if (!EqualityComparer<T>.Default.Equals(_cachedValue, Value))
+            {
+                _cachedValue = Value;
+
+                LoggingService.LogTrace($"OnParametersSetAsync changed _cachedValue value");
+
+                if (!EqualityComparer<T>.Default.Equals(_componentValue, Value))
+                {
+                    LoggingService.LogTrace("OnParametersSetAsync update _componentValue value from '" + _componentValue?.ToString() ?? "null" + "'");
+
+                    _componentValue = Value;
+                    if (HasInstantiated)
+                    {
+                        SetComponentValue?.Invoke();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region SetParametersAsync
 
         // Would like to use <inheritdoc/> however DocFX cannot resolve to references outside Material.Blazor.
         //
@@ -263,43 +359,9 @@ namespace Material.Blazor.Internal
             await base.SetParametersAsync(ParameterView.Empty);
         }
 
-        /// <inheritdoc/>
-        protected override async Task OnParametersSetAsync()
-        {
-            await base.OnParametersSetAsync();
+        #endregion
 
-            CommonParametersSet();
-        }
-
-        private void CommonParametersSet()
-        {
-            LoggingService.LogTrace($"OnParametersSet setter entered: _cachedValue is '{_cachedValue?.ToString() ?? "null"}' and Value is'{Value?.ToString() ?? "null"}'");
-
-            if (!EqualityComparer<T>.Default.Equals(_cachedValue, Value))
-            {
-                _cachedValue = Value;
-
-                LoggingService.LogTrace($"OnParametersSet changed _cachedValue value");
-
-                if (!EqualityComparer<T>.Default.Equals(_componentValue, Value))
-                {
-                    LoggingService.LogTrace("OnParametersSet update _componentValue value from '" + _componentValue?.ToString() ?? "null" + "'");
-
-                    _componentValue = Value;
-                    if (HasInstantiated)
-                    {
-                        SetComponentValue?.Invoke();
-                    }
-                }
-            }
-        }
-
-
-        private protected void AllowNextShouldRender()
-        {
-            AllowNextRender = true;
-        }
-
+        #region ShouldRender
 
         /// <summary>
         /// Material.Blazor components descending from MdcInputComponentBase _*must not*_ override ShouldRender().
@@ -315,52 +377,22 @@ namespace Material.Blazor.Internal
             return false;
         }
 
+        #endregion
+
+        #region TryParseValueFromString
 
         /// <summary>
-        /// Returns true if one of the custom attributes is the <see cref="RequiredAttribute"/>. Used by <see cref="MBTextArea"/> and <see cref="MBTextField"/> to
-        /// look for a required attribute.
+        /// Parses a string to create an instance of <typeparamref name="T"/>. Derived classes can override this to change how
+        /// <see cref="ComponentValueAsString"/> interprets incoming values.
         /// </summary>
-        /// <typeparam name="TItem"></typeparam>
-        /// <param name="accessor"></param>
-        /// <returns></returns>
-        private protected static bool HasRequiredAttribute<TItem>(Expression<Func<TItem>> accessor)
-        {
-            if (accessor == null)
-            {
-                return false;
-            }
+        /// <param name="value">The string value to be parsed.</param>
+        /// <param name="result">An instance of <typeparamref name="T"/>.</param>
+        /// <param name="validationErrorMessage">If the value could not be parsed, provides a validation error message.</param>
+        /// <returns>True if the value could be parsed; otherwise false.</returns>
+        protected virtual bool TryParseValueFromString(string value, out T result, out string validationErrorMessage)
+            => throw new NotImplementedException($"This component does not parse string inputs. Bind to the '{nameof(ComponentValue)}' property, not '{nameof(ComponentValueAsString)}'.");
 
-            var customAttributes = GetExpressionCustomAttributes<TItem>(accessor);
+        #endregion
 
-            return customAttributes.Any(a => a.GetType() == typeof(RequiredAttribute));
-        }
-
-
-        /// <summary>
-        /// Returns the custom attributes assocated with a field. Used by <see cref="MBTextArea"/> and <see cref="MBTextField"/> to
-        /// look for a required attribute.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="accessor"></param>
-        /// <returns></returns>
-        private static IEnumerable<Attribute> GetExpressionCustomAttributes<TItem>(Expression<Func<TItem>> accessor)
-        {
-            var accessorBody = accessor.Body;
-
-            // Unwrap casts to object
-            if (accessorBody is UnaryExpression unaryExpression
-                && unaryExpression.NodeType == ExpressionType.Convert
-                && unaryExpression.Type == typeof(object))
-            {
-                accessorBody = unaryExpression.Operand;
-            }
-
-            if (accessorBody is not MemberExpression memberExpression)
-            {
-                throw new ArgumentException($"The provided expression contains a {accessorBody.GetType().Name} which is not supported. {nameof(FieldIdentifier)} only supports simple member accessors (fields, properties) of an object.");
-            }
-
-            return memberExpression.Member.GetCustomAttributes();
-        }
     }
 }

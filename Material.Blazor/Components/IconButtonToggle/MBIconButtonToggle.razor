@@ -3,10 +3,11 @@
 @inherits InputComponent<bool>
 
 
-<div @attributes="@EventAttributesToSplat()">
+<div @attributes="@EventAttributesToSplat()"
+     class="@(@class)"
+     style="@style">
     <button @ref="@ElementReference"
-            class="mdc-icon-button @ActiveConditionalClasses @(@class)"
-            style="@style"
+            class="mdc-icon-button @ActiveConditionalClasses"
             id="@id"
             @attributes="@OtherAttributesToSplat()"
             @onclick="@ToggleOnClick">

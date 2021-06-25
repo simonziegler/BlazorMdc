@@ -38,9 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.5" />
-    <PackageReference Include="Nager.Date" Version="1.28.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.7" />
+    <PackageReference Include="Nager.Date" Version="1.29.0" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
 

@@ -1,4 +1,15 @@
-﻿.mb-grid-div-header {
+﻿.mb-grid-div-outer {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.mb-grid-div-header {
     font-family: Arial;
     font-weight: bolder;
     padding: 0;

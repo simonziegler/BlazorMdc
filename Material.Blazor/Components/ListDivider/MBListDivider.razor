@@ -1,3 +1,6 @@
 ﻿@namespace Material.Blazor
+@inherits ComponentFoundation
 
-<li class="mdc-list-divider" role="separator"></li>
+<li class="mdc-list-divider @(@class)"
+    role="separator"
+    style="@style" />

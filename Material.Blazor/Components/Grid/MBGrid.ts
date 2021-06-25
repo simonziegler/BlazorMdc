@@ -63,7 +63,7 @@ export function getTextWidths(
     document.body.appendChild(ele);
 
     // Log another time
-    console.log("Above for " + new Date().toString());
+    // console.log("Above for " + new Date().toString());
 
     for (let i = 0; i < textToMeasure.length; i++) {
         // Set the text
@@ -84,7 +84,7 @@ export function getTextWidths(
     document.body.removeChild(ele);
 
     // Log another time
-    console.log("Above return " + new Date().toString());
+    // console.log("Above return " + new Date().toString());
 
     return currentWidths;
 }

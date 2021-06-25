@@ -32,6 +32,7 @@
                     <p>
                         <MBDatePicker @bind-Value="@Filled"
                                       Label="Filled"
+                                      DateFormat="ddd MMM dd, yyyy"
                                       MaxDate="@Max"
                                       MenuSurfacePositioning="@MBMenuSurfacePositioning.Fixed"
                                       MinDate="@Min"
@@ -144,6 +145,52 @@
                 </Primary>
             </MBCard>
         </div>
+
+        <div class="mdc-layout-grid__cell--span-4">
+            <MBCard AutoStyled="true">
+                <Primary>
+                    <h2 class="mb-card__title mdc-typography mdc-typography--headline6">
+                        Default value with SupressDefaultValue set to false
+                    </h2>
+
+                    <h3 class="mb-card__subtitle mdc-typography mdc-typography--subtitle2">
+                        The DatePicker component supports the entire range from <code>DateTime.MinValue</code> to <code>DateTime.MaxValue</code>. For a good user experience, remember to set minimum/maximum selectable value to meaningful values.
+                    </h3>
+
+                    <p>
+                        <MBDatePicker @bind-Value="@Default"
+                                      DateFormat="ddd MMM dd, yyyy"
+                                      Label="Default"
+                                      MenuSurfacePositioning="@MBMenuSurfacePositioning.Fixed"
+                                      SelectInputStyle="MBSelectInputStyle.Outlined" />
+                    </p>
+                </Primary>
+            </MBCard>
+        </div>
+
+        <div class="mdc-layout-grid__cell--span-4">
+            <MBCard AutoStyled="true">
+                <Primary>
+                    <h2 class="mb-card__title mdc-typography mdc-typography--headline6">
+                        Default value with SupressDefaultValue set to true
+                    </h2>
+
+                    <h3 class="mb-card__subtitle mdc-typography mdc-typography--subtitle2">
+                        The DatePicker component supports the entire range from <code>DateTime.MinValue</code> to <code>DateTime.MaxValue</code>. For a good user experience, remember to set minimum/maximum selectable value to meaningful values.
+                    </h3>
+
+                    <p>
+                        <MBDatePicker @bind-Value="@Default"
+                                      DateFormat="ddd MMM dd, yyyy"
+                                      Label="Default"
+                                      MenuSurfacePositioning="@MBMenuSurfacePositioning.Fixed"
+                                      SupressDefaultDate="true"
+                                      SelectInputStyle="MBSelectInputStyle.Outlined" />
+                    </p>
+                </Primary>
+            </MBCard>
+        </div>
+
     </PageContent>
 </DemonstrationPage>
 
@@ -211,6 +258,18 @@
             _customStyle = value;
 
             ToastService.ShowToast(heading: "Custom Style", message: $"Value: {_customStyle.ToLongDateString()}", level: MBToastLevel.Success, showIcon: false);
+        }
+    }
+
+    private DateTime _default = default;
+    private DateTime Default
+    {
+        get => _default;
+        set
+        {
+            _default = value;
+
+            ToastService.ShowToast(heading: "Default", message: $"Value: {_default.ToLongDateString()}", level: MBToastLevel.Success, showIcon: false);
         }
     }
 

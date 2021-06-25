@@ -75,12 +75,5 @@ namespace Material.Blazor
         /// </summary>
         [Parameter] public IMBIconFoundry? IconFoundry { get; set; }
 #nullable restore annotations
-
-
-        // Would like to use <inheritdoc/> however DocFX cannot resolve to references outside Material.Blazor
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-        }
     }
 }
